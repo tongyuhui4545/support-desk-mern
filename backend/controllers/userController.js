@@ -17,7 +17,7 @@ const generateToken = (id) => {
 //@route /api/users
 //@access Public
 
-const registerUser = asyncHandler(async(req, res) => {
+const registerUser = asyncHandler(async(req, res) => { 
   const {name, email, password} = req.body
 
   //Validation
@@ -62,29 +62,39 @@ const registerUser = asyncHandler(async(req, res) => {
 //@desc Log in a new user
 //@route /api/users/login
 //@access Public
-const loginUser = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => { console.log('guagaugaus', req.body);
+
+
    const {email, password} = req.body
-   const user = await User.findOne({email})
+   const user = await User.findOne({email}); console.log('restuuult', user);
 
-   let match = await bcrypt.compare(password, user.password)
-
-   if(user && match) {
-     res.status(200).json({
-      _id: user.id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id)
-     })
-   } else {
+   if(!user) {
     res.status(401)
-    throw new Error('Invalid credentials')
+    throw new Error('Not such a user')
+   }
+
+   else {
+    let match = await bcrypt.compare(password, user.password)
+    if(user && match) {
+      res.status(200).json({
+       _id: user.id,
+       name: user.name,
+       email: user.email,
+       token: generateToken(user._id)
+      })          
+    }
+    else {
+      res.status(401)
+      throw new Error('Invalid credentials')
+    }
    }
 })
 
 //@desc get current user
 //@route /api/users/me
 //@access Private
-const getMe = asyncHandler(async (req, res) => {
+const getMe = asyncHandler(async (req, res) => { 
+
   const user = {
     id: req.user._id,
     name: req.user.name,
